@@ -17,6 +17,7 @@ p256 = ["dep:p256"]
 argon2 = "0.5"
 cxx = { version = "1.0" }
 opaque-ke = { version = "4.0.0", features = ["argon2"] }
+sha2 = "0.10"
 base64 = "0.21"
 rand = { version = "0.8" }
 getrandom = { version = "0.2" }

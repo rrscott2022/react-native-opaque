@@ -13,7 +13,7 @@ jobs:
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
-          ndk-version: r23b
+          ndk-version: r27b
       - name: Add iOS targets
         working-directory: rust
         run: rustup target add x86_64-apple-ios aarch64-apple-ios aarch64-apple-ios-sim
@@ -46,7 +46,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pods-
       - name: Install node_modules
-        run: yarn
+        run: yarn install --frozen-lockfile
+      - name: Install node_modules for example/
+        run: yarn install --frozen-lockfile --cwd example
       - name: Build iOS App
         working-directory: example
         # run: yarn run react-native run-ios --configuration Release --simulator "iPhone 13 (15.2)"
