@@ -1,5 +1,5 @@
 {
-  "name": "react-native-opaque",
+  "name": "@starnix59/react-native-opaque",
   "version": "1.0.0",
   "description": "React Native JSI binding for the OPAQUE password-authenticated key exchange protocol",
   "main": "lib/commonjs/index",

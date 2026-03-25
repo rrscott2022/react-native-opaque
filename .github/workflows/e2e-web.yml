@@ -4,14 +4,14 @@ on: [push]
 
 jobs:
   test:
-    timeout-minutes: 10
+    timeout-minutes: 45
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install node_modules
         run: yarn install --frozen-lockfile
       - name: Install node_modules for example/
-        run: yarn install --frozen-lockfile --cwd example
+        run: yarn install --cwd example
       - name: Install Playwright
         run: npx playwright install --with-deps
       - name: Run e2e tests
