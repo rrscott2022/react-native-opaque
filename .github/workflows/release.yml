@@ -62,33 +62,13 @@ jobs:
             rust/target/x86_64-apple-ios/release/libopaque_rust.a
 
   build-rust-android:
-    name: Build Rust (Android)
+    name: Build Rust (Android, Docker)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-linux-android,arm-linux-androideabi,i686-linux-android,x86_64-linux-android
-
-      - name: Cache Rust build
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: rust
-
-      - name: Setup Android NDK
-        uses: nttld/setup-ndk@v1
-        id: setup-ndk
-        with:
-          ndk-version: r27b
-
-      - name: Install cxxbridge
-        run: cargo install cxxbridge-cmd
-
-      - name: Build Android targets
-        run: make build-android
-        env:
-          NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
+      - name: Build Android targets via Docker
+        run: make docker-build-android
 
       - name: Upload Android static libraries
         uses: actions/upload-artifact@v4

@@ -1,0 +1,44 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV ANDROID_HOME=/opt/android-sdk
+ENV NDK_VERSION=27.1.12297006
+ENV NDK=/opt/android-sdk/ndk/${NDK_VERSION}
+ENV PATH="${PATH}:/root/.cargo/bin"
+
+# Base tooling
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    unzip \
+    ca-certificates \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust (stable)
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+    | sh -s -- -y --default-toolchain stable --no-modify-path \
+ && rustup target add \
+        aarch64-linux-android \
+        arm-linux-androideabi \
+        i686-linux-android \
+        x86_64-linux-android \
+ && cargo install cxxbridge-cmd
+
+# Install Android command-line tools (minimal — just enough to install NDK)
+RUN mkdir -p ${ANDROID_HOME}/cmdline-tools && \
+    curl -fsSL "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip" \
+        -o /tmp/cmdtools.zip && \
+    unzip -q /tmp/cmdtools.zip -d ${ANDROID_HOME}/cmdline-tools && \
+    mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest && \
+    rm /tmp/cmdtools.zip
+
+ENV PATH="${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin"
+
+# Accept licenses and install NDK
+RUN yes | sdkmanager --licenses > /dev/null && \
+    sdkmanager "ndk;${NDK_VERSION}"
+
+WORKDIR /build
+
+# Default: build all Android targets and regenerate the cxx bridge
+CMD ["make", "build-android"]
