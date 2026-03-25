@@ -22,7 +22,11 @@ jobs:
         run: cargo install cxxbridge-cmd
       - name: build
         working-directory: rust
-        run: ./build-android.sh
+        run: |
+          for TARGET in i686-linux-android x86_64-linux-android aarch64-linux-android arm-linux-androideabi; do
+            ./build-android.sh $TARGET
+          done
+          ./gen-cxx.sh
         env:
           NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
       # build app

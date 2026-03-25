@@ -22,7 +22,8 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
-  /* Increase default assertion timeout — WASM Argon2 is CPU-intensive */
+  /* Increase timeouts — WASM Argon2 is CPU-intensive */
+  timeout: 120000,
   expect: { timeout: 60000 },
 
   use: {
