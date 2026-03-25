@@ -25,7 +25,7 @@
     "babel-loader": "^9.1.2",
     "babel-plugin-module-resolver": "^4.1.0",
     "babel-plugin-react-native-web": "^0.19.4",
-    "metro-react-native-babel-preset": "0.81.0",
+    "metro-react-native-babel-preset": "^0.77.0",
     "url-loader": "^4.1.1",
     "webpack": "^5.83.1",
     "webpack-cli": "^5.1.1",
