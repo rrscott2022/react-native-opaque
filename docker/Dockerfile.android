@@ -6,12 +6,13 @@ ENV NDK_VERSION=27.1.12297006
 ENV NDK=/opt/android-sdk/ndk/${NDK_VERSION}
 ENV PATH="${PATH}:/root/.cargo/bin"
 
-# Base tooling
+# Base tooling (includes Java for sdkmanager)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     unzip \
     ca-certificates \
     build-essential \
+    openjdk-17-jdk-headless \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Rust (stable)

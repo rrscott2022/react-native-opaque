@@ -5,7 +5,7 @@ on: [push]
 jobs:
   test-android:
     name: e2e-android-test
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -13,10 +13,7 @@ jobs:
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
-          ndk-version: r23b
-      - name: Add iOS targets
-        working-directory: rust
-        run: rustup target add x86_64-apple-ios aarch64-apple-ios aarch64-apple-ios-sim
+          ndk-version: r27b
       - name: Add Android targets
         working-directory: rust
         run: rustup target add i686-linux-android x86_64-linux-android aarch64-linux-android arm-linux-androideabi
@@ -25,7 +22,7 @@ jobs:
         run: cargo install cxxbridge-cmd
       - name: build
         working-directory: rust
-        run: ./build-all.sh
+        run: ./build-android.sh
         env:
           NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
       # build app
@@ -43,7 +40,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '11'
+          java-version: '17'
       - name: Gradle cache
         uses: actions/cache@v4
         with:
@@ -51,11 +48,16 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/**/*.kt') }}
-      - name: Install node_modules in root
+      - name: Install node_modules
         run: yarn install --frozen-lockfile
-      - name: Install node_modules in example
-        working-directory: example
-        run: yarn install --frozen-lockfile
+      - name: Install node_modules for example/
+        run: yarn install --frozen-lockfile --cwd example
+      # Enable KVM for hardware acceleration on Ubuntu
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
       # Install Maestro
       - name: Install Maestro CLI
         run: curl -Ls "https://get.maestro.mobile.dev" | bash
