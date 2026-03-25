@@ -49,6 +49,9 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Install node_modules for example/
         run: yarn install --frozen-lockfile --cwd example
+      - name: Install Pods
+        working-directory: example/ios
+        run: pod install
       - name: Build iOS App
         working-directory: example
         # run: yarn run react-native run-ios --configuration Release --simulator "iPhone 13 (15.2)"
