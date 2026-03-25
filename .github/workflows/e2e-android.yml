@@ -55,7 +55,7 @@ jobs:
       - name: Install node_modules
         run: yarn install --frozen-lockfile
       - name: Install node_modules for example/
-        run: yarn install --frozen-lockfile --cwd example
+        run: yarn install --cwd example
       # Enable KVM for hardware acceleration on Ubuntu
       - name: Enable KVM group perms
         run: |
