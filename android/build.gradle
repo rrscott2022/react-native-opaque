@@ -1,5 +1,3 @@
-import java.nio.file.Paths
-
 buildscript {
   repositories {
     google()
@@ -7,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath "com.android.tools.build:gradle:7.2.1"
+    classpath "com.android.tools.build:gradle:8.7.3"
   }
 }
 
@@ -17,77 +15,57 @@ def isNewArchitectureEnabled() {
 
 apply plugin: "com.android.library"
 
-
-def appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
-
 if (isNewArchitectureEnabled()) {
   apply plugin: "com.facebook.react"
 }
 
-def getExtOrDefault(name) {
-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties["Opaque_" + name]
-}
-
-def getExtOrIntegerDefault(name) {
-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["Opaque_" + name]).toInteger()
-}
-
-static def findNodeModules(baseDir) {
-  def basePath = baseDir.toPath().normalize()
-  while (basePath) {
-    def nodeModulesPath = Paths.get(basePath.toString(), "node_modules")
-    def reactNativePath = Paths.get(nodeModulesPath.toString(), "react-native")
-    if (nodeModulesPath.toFile().exists() && reactNativePath.toFile().exists()) {
-      return nodeModulesPath.toString()
-    }
-    basePath = basePath.getParent()
-  }
-  throw new GradleException("react-native-opaque: Failed to find node_modules path")
-}
-
-def nodeModules = findNodeModules(projectDir)
-
 android {
-  ndkVersion getExtOrDefault("ndkVersion")
-  compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
+  namespace "com.opaque"
+  compileSdk 36
+  ndkVersion "27.1.12297006"
 
   defaultConfig {
-    minSdkVersion getExtOrIntegerDefault("minSdkVersion")
-    targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
+    minSdk 24
+    targetSdk 36
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
     externalNativeBuild {
       cmake {
         cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all"
         abiFilters "x86", "x86_64", "armeabi-v7a", "arm64-v8a"
-        // defaults to c++_static but we need to use the shared version to make 
-        // exceptions (and other STL types) across shared object boundaries work
-        // correctly.
-        // see https://developer.android.com/ndk/guides/cpp-support#selecting_a_c_runtime
-        arguments "-DANDROID_STL=c++_shared",
-                  "-DNODE_MODULES_DIR=${nodeModules}"
+        // Use the shared STL so C++ exceptions and types work across .so boundaries.
+        // https://developer.android.com/ndk/guides/cpp-support#selecting_a_c_runtime
+        arguments "-DANDROID_STL=c++_shared"
       }
     }
   }
+
+  buildFeatures {
+    // Required to consume JSI headers from the react-android prefab package.
+    prefab true
+    buildConfig true
+  }
+
   externalNativeBuild {
     cmake {
       path "CMakeLists.txt"
+      version "3.22.1"
     }
   }
+
   buildTypes {
     release {
       minifyEnabled false
     }
   }
 
-  lintOptions {
+  lint {
     disable "GradleCompatible"
   }
 
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
   }
-
 }
 
 repositories {
@@ -95,12 +73,11 @@ repositories {
   google()
 }
 
-
 dependencies {
-  // For < 0.71, this will be from the local maven repo
-  // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
+  // react-android is provided by the React Native Gradle Plugin in the
+  // consuming app (RN 0.73+). Using + avoids a hard version pin here.
   //noinspection GradleDynamicVersion
-  implementation "com.facebook.react:react-native:+"
+  implementation "com.facebook.react:react-android"
 }
 
 if (isNewArchitectureEnabled()) {

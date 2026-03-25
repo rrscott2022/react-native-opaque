@@ -14,11 +14,17 @@ if [ "$TARGET" = "arm-linux-androideabi" ]; then
     NDK_TARGET="armv7a-linux-androideabi"
 fi
 
-API_VERSION="21"
-NDK_VERSION="23.1.7779620"
-NDK_HOST="darwin-x86_64"
+API_VERSION="24"
+NDK_VERSION="27.1.12297006"
 
-# needed so we can overwrite it in the CI
+# Detect host platform
+if [ "$(uname)" = "Darwin" ]; then
+    NDK_HOST="darwin-x86_64"
+else
+    NDK_HOST="linux-x86_64"
+fi
+
+# Allow overriding NDK path from CI
 if [ -z "$NDK" ]; then
   NDK="$ANDROID_HOME/ndk/$NDK_VERSION"
 fi

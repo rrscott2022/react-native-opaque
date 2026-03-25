@@ -14,10 +14,10 @@ default = []
 p256 = ["dep:p256"]
 
 [dependencies]
-argon2 = "0.5.0"
-cxx = { version = "1.0.94" }
-opaque-ke = { version = "3.0.0-pre.4", features = ["argon2"] }
-base64 = "0.21.0"
-rand = { version = "0.8.5" }
-getrandom = { version = "0.2.8" }
+argon2 = "0.5"
+cxx = { version = "1.0" }
+opaque-ke = { version = "4.0.0", features = ["argon2"] }
+base64 = "0.21"
+rand = { version = "0.8" }
+getrandom = { version = "0.2" }
 p256 = { version = "0.13", default-features = false, features = ["hash2curve", "voprf"], optional = true }

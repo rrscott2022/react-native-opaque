@@ -8,7 +8,7 @@ use opaque_ke::{
     ClientLogin, ClientLoginFinishParameters, ClientRegistration,
     ClientRegistrationFinishParameters, CredentialFinalization, CredentialRequest,
     CredentialResponse, Identifiers, RegistrationRequest, RegistrationResponse, ServerLogin,
-    ServerLoginStartParameters, ServerRegistration, ServerSetup,
+    ServerLoginParameters, ServerRegistration, ServerSetup,
 };
 
 struct DefaultCipherSuite;
@@ -16,7 +16,6 @@ struct DefaultCipherSuite;
 #[cfg(not(feature = "p256"))]
 impl CipherSuite for DefaultCipherSuite {
     type OprfCs = opaque_ke::Ristretto255;
-    type KeGroup = opaque_ke::Ristretto255;
     type KeyExchange = opaque_ke::key_exchange::tripledh::TripleDh;
     type Ksf = Argon2<'static>;
 }
@@ -24,7 +23,6 @@ impl CipherSuite for DefaultCipherSuite {
 #[cfg(feature = "p256")]
 impl CipherSuite for DefaultCipherSuite {
     type OprfCs = p256::NistP256;
-    type KeGroup = p256::NistP256;
     type KeyExchange = opaque_ke::key_exchange::tripledh::TripleDh;
     type Ksf = Argon2<'static>;
 }
@@ -258,7 +256,7 @@ fn opaque_start_server_login(
     let server_ident = get_optional_string(params.server_identifier)?;
     let client_ident = get_optional_string(params.client_identifier)?;
 
-    let start_params = ServerLoginStartParameters {
+    let start_params = ServerLoginParameters {
         identifiers: Identifiers {
             client: client_ident.as_ref().map(|val| val.as_bytes()),
             server: server_ident.as_ref().map(|val| val.as_bytes()),
