@@ -22,9 +22,9 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
-  /* Increase timeouts — WASM Argon2 is CPU-intensive */
-  timeout: 120000,
-  expect: { timeout: 60000 },
+  /* Increase timeouts — WASM Argon2 is CPU-intensive; full test suite has ~17 KDF ops */
+  timeout: 600000,
+  expect: { timeout: 540000 },
 
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
